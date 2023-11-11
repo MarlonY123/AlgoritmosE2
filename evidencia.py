@@ -99,13 +99,58 @@ def sais(T):
 
     return SA
 
+def bwtFunction(s, sa, bwt, secciones, occ):
+    for i in range(len(s)):
+        if i == 0 or s[sa[i-1]] != s[sa[i]]:
+            secciones[s[sa[i]]] = i
+        bwt[i] = s[sa[i]-1]
+        for j in keys:
+            if bwt[i] == j:
+                occ[j].append(occ[j][i] + 1)
+            else:
+                occ[j].append(occ[j][i])
+
+def bwtInverseFunction(bwt, secciones, occurs):
+    texto = ""
+    n = 0
+    letra = bwt[n]
+    texto += letra
+    while letra != '$':
+        n = secciones[letra] + occurs[letra][n]
+        letra = bwt[n]
+        texto = letra + texto
+    return texto
+
+
+
+
 s= "banana$"
 T = [ord(c) for c in s]
+
 sa = sais(T)
-print(sa)
+
 
 bwt = ['-'] * len(s)
-for i in range(len(s)):
-    bwt[i] = s[sa[i]-1]
+abc = set('banana$')
+keys = sorted(abc)
 
-print("".join(bwt))
+#Definicion del diccionario para las secciones del first
+secciones = dict.fromkeys(keys,0)
+
+#Definicion del diccionario para las ocurrencias del last
+occ = {}
+for key in keys:
+    occ[key] = [0]
+
+bwtFunction(s, sa, bwt, secciones, occ)
+
+
+
+texto = bwtInverseFunction(bwt, secciones, occ)
+
+print(texto)
+
+#print(bwt)
+#print(occ)
+
+#print("".join(bwt))
