@@ -1,3 +1,5 @@
+import time
+
 import subprocess
 #SA-IS
 def getBuckets(T):
@@ -204,7 +206,6 @@ if __name__ == '__main__':
     #Se crea el suffix array de la palabra
     T = [ord(c) for c in s]
     sa = sais(T)
-
     #Se inicia el proceso BURROWS WHEELER
     bwt = ['-'] * len(s)
     #abc = set('banana$')
@@ -215,28 +216,30 @@ if __name__ == '__main__':
     occ = {}
     for key in alph:
         occ[key] = [0]
+    
     #Se aplica el BURROWS WHEELER
+    startbw=time.time()
     bwtFunction(s, sa, bwt, secciones, occ)
     #print(bwt)
-    #Se revierte el BURROWS WHEELER
-    texto = bwtInverseFunction(bwt, secciones, occ)
+    endbw=time.time()
+    print("Ejecución de Burrows Wheeler:",(endbw-startbw),"s")
 
     #Se aplica MOVE TO FRONT
     #mtf coded list
     mtf=[]
-    #mtf decoded list
-    mtfd=[]
+    startmtf=time.time()
     moveToFrontCoding(alph,bwt)
-    #print(mtf)
+    endmtf=time.time()
+    print("Ejecución de Move To Front:",(endmtf-startmtf),"s")
+
+    mtfd=[]
     moveToFrontDecoding(alph,mtf)
-    #print(mtfd)
     print(mtf)
-    #mtf = [1, 14, 0,0,0 , 3, 3, 3, 0]
+
+    #RUN-LENGTH 
     rLE = runLengthEncoding(mtf)
-    #print(rLE)
     rLD = runLengthDecoding(rLE)
 
-    print(rLE)
     rLE = ', '.join(map(str, rLE))
     saveFile("runLengthEncoding.txt", rLE)
 
@@ -247,7 +250,4 @@ if __name__ == '__main__':
 
     HuffmanCpp(nombre_programa_cpp, nombre_ejecutable)
 
-
-
-
-
+    
