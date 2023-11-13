@@ -1,7 +1,5 @@
-def openFile(filename):
-    f=open(filename,encoding="utf8")
-    return f.read()
-
+import subprocess
+#SA-IS
 def getBuckets(T):
     count = {}
     buckets = {}
@@ -12,7 +10,6 @@ def getBuckets(T):
         buckets[c] = (start, start + count[c])
         start += count[c]
     return buckets
-
 def sais(T):
     t = ["_"] * len(T)
     
@@ -102,13 +99,26 @@ def sais(T):
                 SA[buckets[symbol][1] - revoffset] = SA[i] - 1
 
     return SA
+#Files
+def openFile(filename):
+    f=open(filename,encoding="utf8")
+    text=f.read()
+    f.close()
+    return text
 
+def saveFile(filename, toSave):
+    f = open(filename, "w")
+    f.write(rLE)
+    f.close()
+
+
+#BURROWS WHEELER CODING AND DECODING
 def bwtFunction(s, sa, bwt, secciones, occ):
     for i in range(len(s)):
-        #if i == 0 or s[sa[i-1]] != s[sa[i]]:
-        #    secciones[s[sa[i]]] = i
+        if i == 0 or s[sa[i-1]] != s[sa[i]]:
+            secciones[s[sa[i]]] = i
         bwt[i] = s[sa[i]-1]
-        for j in keys:
+        for j in secciones.keys():
             if bwt[i] == j:
                 occ[j].append(occ[j][i] + 1)
             else:
@@ -124,6 +134,26 @@ def bwtInverseFunction(bwt, secciones, occurs):
         letra = bwt[n]
         texto = letra + texto
     return texto
+#MOVE TO FRONT CODING AND DECODING
+def moveToFront(index,alph):
+    word=alph[index]
+    alph2=alph
+    alph[1:index+1]=alph2[:index]
+    alph[0]=word
+def moveToFrontCoding(alphabet,T):
+    alph2=alphabet[:]
+    for i in range (len(T)):
+        for j in range(len(alph2)):
+            if T[i] == alph2[j]:
+                mtf.append(j)
+                moveToFront(j,alph2)
+                break
+
+def moveToFrontDecoding(alph,mtf):
+    for i in range(len(mtf)):
+        mtfd.append(alph[mtf[i]])
+        moveToFront(mtf[i],alph)
+
 
 def runLengthEncoding(moveToFront):
     encoded = []
@@ -132,62 +162,90 @@ def runLengthEncoding(moveToFront):
         if i == 0:
             zeroCounter += 1
             if zeroCounter == 255:
-                encoded.append([0,255])
+                encoded.append(0)
+                encoded.append(255)
                 zeroCounter = 0
         else:
             if zeroCounter > 0:
-                encoded.append([0,zeroCounter])
+                encoded.append(0)
+                encoded.append(zeroCounter)
                 zeroCounter = 0
             encoded.append(i)
     if zeroCounter > 0:
-        encoded.append([0, zeroCounter])
+        encoded.append(0)
+        encoded.append(zeroCounter)
     return encoded
 
+def runLengthDecoding(runLength):
+    decode = []
+    for i in runLength:
+        if type(i) == list:
+            decode.extend([0]*i[1])
+        else:
+            decode.append(i)
+    return decode
 
-#s= "banana$"
+def HuffmanCpp(nombre_programa_cpp, nombre_ejecutable):
+    # Compilar el programa C++
+    comando_compilacion = f"g++ {nombre_programa_cpp} -o {nombre_ejecutable}"
+    proceso_compilacion = subprocess.run(comando_compilacion, shell=True, check=True)
 
-s = openFile("Dracula.txt")
-
-T = [ord(c) for c in s]
-T.append(0)
-
-sa = sais(T)
-
-
-bwt = ['-'] * len(s)
-abc = set('banana$')
-keys = sorted(abc)
-
-
-#Definicion del diccionario para las secciones del first
-secciones = dict.fromkeys(keys,0)
-
-#Definicion del diccionario para las ocurrencias del last
-occ = {}
-for key in keys:
-    occ[key] = [0]
-
-bwtFunction(s, sa, bwt, secciones, occ)
+    # Ejecutar el programa compilado
+    comando_ejecucion = f"{nombre_ejecutable}.exe"  # Cambia a nombre_ejecutable.exe en Windows
+    proceso_ejecucion = subprocess.run(comando_ejecucion, shell=True, check=True)
 
 
+if __name__ == '__main__':
+    #Declaramos el alfabeto a utilizar
+    alph = openFile("abecedario.txt")
+    alph=list(alph)
+    #Declaramos la palabra a utilizar
+    s= "banana$"
+    #Se crea el suffix array de la palabra
+    T = [ord(c) for c in s]
+    sa = sais(T)
 
-#texto = bwtInverseFunction(bwt, secciones, occ)
+    #Se inicia el proceso BURROWS WHEELER
+    bwt = ['-'] * len(s)
+    #abc = set('banana$')
+    #keys = sorted(abc)
+    #Definicion del diccionario para las secciones del first
+    secciones = dict.fromkeys(alph,0)
+    #Definicion del diccionario para las ocurrencias del last
+    occ = {}
+    for key in alph:
+        occ[key] = [0]
+    #Se aplica el BURROWS WHEELER
+    bwtFunction(s, sa, bwt, secciones, occ)
+    #print(bwt)
+    #Se revierte el BURROWS WHEELER
+    texto = bwtInverseFunction(bwt, secciones, occ)
 
-#print(texto)
+    #Se aplica MOVE TO FRONT
+    #mtf coded list
+    mtf=[]
+    #mtf decoded list
+    mtfd=[]
+    moveToFrontCoding(alph,bwt)
+    #print(mtf)
+    moveToFrontDecoding(alph,mtf)
+    #print(mtfd)
+    print(mtf)
+    #mtf = [1, 14, 0,0,0 , 3, 3, 3, 0]
+    rLE = runLengthEncoding(mtf)
+    #print(rLE)
+    rLD = runLengthDecoding(rLE)
 
-#print(bwt)
-#print(occ)
-bwt = "".join(bwt)
+    print(rLE)
+    rLE = ', '.join(map(str, rLE))
+    saveFile("runLengthEncoding.txt", rLE)
 
-with open('bwt.txt', 'w') as f:
-    f.write(bwt)
+    #print(runLengthEncoding(moveToFront))
 
-#moveToFront = [1,3,0,3,3,3,0]
+    nombre_programa_cpp = "huffman.cpp"
+    nombre_ejecutable = "huffman"
 
-
-#print(runLengthEncoding(moveToFront))
-        
-#with open('moveToFront.txt', 'rb') as f:
+    HuffmanCpp(nombre_programa_cpp, nombre_ejecutable)
 
 
 
