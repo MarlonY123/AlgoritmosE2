@@ -98,9 +98,12 @@ def sais(T):
                 SA[buckets[symbol][1] - revoffset] = SA[i] - 1
 
     return SA
+#Files
 def openFile(filename):
     f=open(filename,encoding="utf8")
-    return f.read()
+    text=f.read()
+    f.close()
+    return text
 #BURROWS WHEELER CODING AND DECODING
 def bwtFunction(s, sa, bwt, secciones, occ):
     for i in range(len(s)):
