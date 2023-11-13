@@ -98,7 +98,10 @@ def sais(T):
                 SA[buckets[symbol][1] - revoffset] = SA[i] - 1
 
     return SA
-
+def openFile(filename):
+    f=open(filename,encoding="utf8")
+    return f.read()
+#BURROWS WHEELER CODING AND DECODING
 def bwtFunction(s, sa, bwt, secciones, occ):
     for i in range(len(s)):
         if i == 0 or s[sa[i-1]] != s[sa[i]]:
@@ -120,37 +123,62 @@ def bwtInverseFunction(bwt, secciones, occurs):
         letra = bwt[n]
         texto = letra + texto
     return texto
+#MOVE TO FRONT CODING AND DECODING
+def moveToFront(index,alph):
+    word=alph[index]
+    alph2=alph
+    alph[1:index+1]=alph2[:index]
+    alph[0]=word
+def moveToFrontCoding(alphabet,T):
+    alph2=alphabet[:]
+    for i in range (len(T)):
+        for j in range(len(alph2)):
+            if T[i] == alph2[j]:
+                mtf.append(j)
+                moveToFront(j,alph2)
+                break
 
+def moveToFrontDecoding(alph,mtf):
+    for i in range(len(mtf)):
+        mtfd.append(alph[mtf[i]])
+        moveToFront(mtf[i],alph)
 
+    
+                
+    
 
+if __name__ == '__main__':
 
-s= "banana$"
-T = [ord(c) for c in s]
+    #Declaramos el alfabeto a utilizar
+    alph = openFile("abecedario.txt")
+    alph=list(alph)
+    #Declaramos la palabra a utilizar
+    s= "banana$"
+    #Se crea el suffix array de la palabra
+    T = [ord(c) for c in s]
+    sa = sais(T)
 
-sa = sais(T)
+    #Se inicia el proceso BURROWS WHEELER
+    bwt = ['-'] * len(s)
+    abc = set('banana$')
+    keys = sorted(abc)
+    #Definicion del diccionario para las secciones del first
+    secciones = dict.fromkeys(keys,0)
+    #Definicion del diccionario para las ocurrencias del last
+    occ = {}
+    for key in keys:
+        occ[key] = [0]
+    #Se aplica el BURROWS WHEELER
+    bwtFunction(s, sa, bwt, secciones, occ)
+    #Se revierte el BURROWS WHEELER
+    texto = bwtInverseFunction(bwt, secciones, occ)
 
-
-bwt = ['-'] * len(s)
-abc = set('banana$')
-keys = sorted(abc)
-
-#Definicion del diccionario para las secciones del first
-secciones = dict.fromkeys(keys,0)
-
-#Definicion del diccionario para las ocurrencias del last
-occ = {}
-for key in keys:
-    occ[key] = [0]
-
-bwtFunction(s, sa, bwt, secciones, occ)
-
-
-
-texto = bwtInverseFunction(bwt, secciones, occ)
-
-print(texto)
-
-#print(bwt)
-#print(occ)
-
-#print("".join(bwt))
+    #Se aplica MOVE TO FRONT
+    #mtf coded list
+    mtf=[]
+    #mtf decoded list
+    mtfd=[]
+    moveToFrontCoding(alph,bwt)
+    print(mtf)
+    moveToFrontDecoding(alph,mtf)
+    print(mtfd)
