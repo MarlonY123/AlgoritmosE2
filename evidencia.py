@@ -1,3 +1,5 @@
+import time
+
 def getBuckets(T):
     count = {}
     buckets = {}
@@ -160,7 +162,6 @@ if __name__ == '__main__':
     #Se crea el suffix array de la palabra
     T = [ord(c) for c in s]
     sa = sais(T)
-
     #Se inicia el proceso BURROWS WHEELER
     bwt = ['-'] * len(s)
     abc = set('banana$')
@@ -172,16 +173,14 @@ if __name__ == '__main__':
     for key in keys:
         occ[key] = [0]
     #Se aplica el BURROWS WHEELER
+    startbw=time.time()
     bwtFunction(s, sa, bwt, secciones, occ)
-    #Se revierte el BURROWS WHEELER
-    texto = bwtInverseFunction(bwt, secciones, occ)
-
+    endbw=time.time()
+    print("Ejecución de Burrows Wheeler:",(endbw-startbw),"s")
     #Se aplica MOVE TO FRONT
     #mtf coded list
     mtf=[]
-    #mtf decoded list
-    mtfd=[]
+    startmtf=time.time()
     moveToFrontCoding(alph,bwt)
-    print(mtf)
-    moveToFrontDecoding(alph,mtf)
-    print(mtfd)
+    endmtf=time.time()
+    print("Ejecución de Move To Front:",(endmtf-startmtf),"s")
