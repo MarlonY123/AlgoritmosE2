@@ -1,3 +1,7 @@
+def openFile(filename):
+    f=open(filename,encoding="utf8")
+    return f.read()
+
 def getBuckets(T):
     count = {}
     buckets = {}
@@ -101,8 +105,8 @@ def sais(T):
 
 def bwtFunction(s, sa, bwt, secciones, occ):
     for i in range(len(s)):
-        if i == 0 or s[sa[i-1]] != s[sa[i]]:
-            secciones[s[sa[i]]] = i
+        #if i == 0 or s[sa[i-1]] != s[sa[i]]:
+        #    secciones[s[sa[i]]] = i
         bwt[i] = s[sa[i]-1]
         for j in keys:
             if bwt[i] == j:
@@ -121,11 +125,31 @@ def bwtInverseFunction(bwt, secciones, occurs):
         texto = letra + texto
     return texto
 
+def runLengthEncoding(moveToFront):
+    encoded = []
+    zeroCounter = 0
+    for i in moveToFront:
+        if i == 0:
+            zeroCounter += 1
+            if zeroCounter == 255:
+                encoded.append([0,255])
+                zeroCounter = 0
+        else:
+            if zeroCounter > 0:
+                encoded.append([0,zeroCounter])
+                zeroCounter = 0
+            encoded.append(i)
+    if zeroCounter > 0:
+        encoded.append([0, zeroCounter])
+    return encoded
 
 
+#s= "banana$"
 
-s= "banana$"
+s = openFile("Dracula.txt")
+
 T = [ord(c) for c in s]
+T.append(0)
 
 sa = sais(T)
 
@@ -133,6 +157,7 @@ sa = sais(T)
 bwt = ['-'] * len(s)
 abc = set('banana$')
 keys = sorted(abc)
+
 
 #Definicion del diccionario para las secciones del first
 secciones = dict.fromkeys(keys,0)
@@ -146,11 +171,25 @@ bwtFunction(s, sa, bwt, secciones, occ)
 
 
 
-texto = bwtInverseFunction(bwt, secciones, occ)
+#texto = bwtInverseFunction(bwt, secciones, occ)
 
-print(texto)
+#print(texto)
 
 #print(bwt)
 #print(occ)
+bwt = "".join(bwt)
 
-#print("".join(bwt))
+with open('bwt.txt', 'w') as f:
+    f.write(bwt)
+
+#moveToFront = [1,3,0,3,3,3,0]
+
+
+#print(runLengthEncoding(moveToFront))
+        
+#with open('moveToFront.txt', 'rb') as f:
+
+
+
+
+
