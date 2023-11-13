@@ -44,42 +44,39 @@ HuffmanNode* buildHuffmanTree(const map<char, int>& charFrequency) {
     return minHeap.top();
 }
 
-void printHuffmanCodes(HuffmanNode* root, string code = "") {
+void generateHuffmanCodes(HuffmanNode* root, const string& code, map<char, string>& huffmanCodes) {
     if (root == nullptr) {
         return;
     }
 
     if (root->data != '$') {
-        cout << root->data << ": " << code << endl;
+        huffmanCodes[root->data] = code;
     }
 
-    printHuffmanCodes(root->left, code + "0");
-    printHuffmanCodes(root->right, code + "1");
+    generateHuffmanCodes(root->left, code + "0", huffmanCodes);
+    generateHuffmanCodes(root->right, code + "1", huffmanCodes);
 }
 
 int main() {
     // Example map<char, int>
     map<char, int> charFrequency = {
-        {'a', 5},
-        {'b', 9},
-        {'c', 12},
-        {'d', 13},
-        {'e', 16},
-        {'f', 5},
-        {'g', 15},
-        {'h', 1},
-        {'i', 4},
-        {'j', 35},
-        {'k', 11},
-        {'l', 22}
+        {'a', 3},
+        {'b', 1},
+        {'n', 2}
     };
 
     // Build the Huffman tree
     HuffmanNode* root = buildHuffmanTree(charFrequency);
 
+    // Generate Huffman codes
+    map<char, string> huffmanCodes;
+    generateHuffmanCodes(root, "", huffmanCodes);
+
     // Print Huffman codes
     cout << "Huffman Codes:" << endl;
-    printHuffmanCodes(root);
+    for (const auto& pair : huffmanCodes) {
+        cout << pair.first << ": " << pair.second << endl;
+    }
 
     return 0;
 }
