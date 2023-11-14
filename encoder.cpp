@@ -130,6 +130,14 @@ void encodeToBinaryFile(const map<int, string>& huffmanCodes, const vector<int>&
     binaryFile.close();
 }
 
+void mapToTxt(const std::map<int, std::string>& myMap, const std::string& fileName) {
+    std::ofstream textFile(fileName);
+    for (const auto& entry : myMap) {
+        textFile << entry.first << ": " << entry.second << std::endl;
+    }
+    textFile.close();
+}
+
 int main() {
 
     vector<int> frequencies = readFile("runLengthEncoding.txt");
@@ -149,6 +157,8 @@ int main() {
     // Generate Huffman codes
     map<int, string> huffmanCodes;
     generateHuffmanCodes(root, "", huffmanCodes);
+
+    mapToTxt(huffmanCodes, "huffman.txt");
 
     // Specify input and output file names
     string inputFileName = "runLengthEncoding.txt";
