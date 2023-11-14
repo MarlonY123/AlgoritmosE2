@@ -206,65 +206,37 @@ def HuffmanCpp(nombre_programa_cpp, nombre_ejecutable):
 
 
 if __name__ == '__main__':
-    #Declaramos el alfabeto a utilizar
-    #alph = openFile("abecedario.txt")
-    #alph=list(alph)
-
-    alph = set()
-
-    s = openFile("Dracula.txt")
     
-    #alph = ''.join(s)
-    #alph = list(alph)
-    #print(text)
-    
-    #Declaramos la palabra a utilizar
-    #s= "banana"
-    s += '\0'
-    #print(s)
+    #Declaramos el libro a utilizar
+    s = openFile("Libros/Dracula.txt")
+    s+='\0'
     #Se crea el suffix array de la palabra
-    #T = [ord(c) for c in s]
     T = []
     for c in s:
-        alph.add(c)
         T.append(ord(c))
-    alph.add('\0')
-    
-    #alph = ''.join(alph)
+    alph=set(s)
+    alph=sorted(alph)
     alph = list(alph)
-    #print(alph)
-    #print(text)
-    
-    #T.append(0)
     sa = sais(T)
-    #print(alph)
     #Se inicia el proceso BURROWS WHEELER
     bwt = ['-'] * len(s)
-    #abc = set('banana$')
-    #keys = sorted(abc)
+    
     #Definicion del diccionario para las secciones del first
     secciones = dict.fromkeys(alph,0)
     #Definicion del diccionario para las ocurrencias del last
     occ = {}
     for key in alph:
         occ[key] = [0]
-
-
-    
     #Se aplica el BURROWS WHEELER
     startbw=time.time()
     bwtFunction(s, sa, bwt, secciones, occ)
 
     endbw=time.time()
-    #print("Ejecución de Burrows Wheeler:",(endbw-startbw),"s")
-
-    #print(bwt)
-    #bwtInverse = bwtInverseFunction(bwt, secciones, occ)
-    #print(bwtInverse)
+    print("Ejecución de Burrows Wheeler:",(endbw-startbw),"s")
 
     
-    #Se aplica MOVE TO FRONT
-    #mtf coded list
+    # Se aplica MOVE TO FRONT
+    # mtf coded list
     mtf=[]
     mtfd=[]
     
@@ -272,25 +244,24 @@ if __name__ == '__main__':
     moveToFrontCoding(alph,bwt)
     endmtf=time.time()
     print("Ejecución de Move To Front:",(endmtf-startmtf),"s")
-    #print(mtf)
 
-    moveToFrontDecoding(alph,mtf)
     
-    #RUN-LENGTH 
+    # RUN-LENGTH 
+    startrl=time.time()
     rLE = runLengthEncoding(mtf)
-    #print(rLE)
+    endrl=time.time()
+    print("Ejecución del Run-Length:",(endrl-startrl),"s")
 
-    #rLD = runLengthDecoding(rLE)
-    #print(rLD)
-
-    rLE = ', '.join(map(str, rLE))
-    saveFile("runLengthEncoding.txt", rLE)
-
-    nombre_programa_cpp = "huffman.cpp"
-    nombre_ejecutable = "huffman"
-
-    #HuffmanCpp(nombre_programa_cpp, nombre_ejecutable)
     
 
+    # nombre_programa_cpp = "huffman.cpp"
+    # nombre_ejecutable = "huffman"
+
+    # # HuffmanCpp(nombre_programa_cpp, nombre_ejecutable)
+    saveFile("Resultado/1-SuffixArray.txt",' '.join(map(str,sa)))
+    saveFile("Resultado/2-abecedario.txt",''.join(map(str,alph)))
+    saveFile("Resultado/3-BurrowsWheelerTransform.txt",' '.join(map(str,bwt)))
+    saveFile("Resultado/4-MoveToFront.txt",' '.join(map(str,mtf)))
+    saveFile("Resultado/5-RunLength.txt",' '.join(map(str,rLE)))
     
     
