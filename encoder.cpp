@@ -3,6 +3,8 @@
 #include <map>
 #include <bitset>
 #include <queue>
+#include <vector>
+#include <sstream>
 
 using namespace std;
 
@@ -21,7 +23,7 @@ struct CompareNodes {
     }
 };
 
-HuffmanNode* buildHuffmanTree(const map<char, int>& charFrequency) {
+HuffmanNode* buildHuffmanTree(const map<int, int>& charFrequency) {
     priority_queue<HuffmanNode*, vector<HuffmanNode*>, CompareNodes> minHeap;
 
     // Create a leaf node for each character and add it to the min heap
@@ -46,7 +48,7 @@ HuffmanNode* buildHuffmanTree(const map<char, int>& charFrequency) {
     return minHeap.top();
 }
 
-void generateHuffmanCodes(HuffmanNode* root, const string& code, map<char, string>& huffmanCodes) {
+void generateHuffmanCodes(HuffmanNode* root, const string& code, map<int, string>& huffmanCodes) {
     if (root == nullptr) {
         return;
     }
@@ -59,61 +61,24 @@ void generateHuffmanCodes(HuffmanNode* root, const string& code, map<char, strin
     generateHuffmanCodes(root->right, code + "1", huffmanCodes);
 }
 
-// Assuming you have the previously generated Huffman codes in a map<char, string> huffmanCodes
 
-// Function to encode a text file using Huffman codes and write the result to a binary file
-void encodeTextFile(const string& inputFileName, const string& outputFileName, const map<char, string>& huffmanCodes) {
+void encodeTextFile(const string& inputFileName, const string& outputFileName, const map<int, string>& huffmanCodes) {
     ifstream inputFile(inputFileName, ios::in);
-
-    if (!inputFile) {
-        cerr << "Error: Unable to open input file: " << inputFileName << endl;
-        return;
-    }
 
     ofstream outputFile(outputFileName, ios::out | ios::binary);
 
-    if (!outputFile) {
-        cerr << "Error: Unable to open output file: " << outputFileName << endl;
-        return;
-    }
-
-    // Write the number of characters in the original text to the output file
-    int numCharacters = 0;
-    while (inputFile.get() != EOF) {
-        numCharacters++;
-    }
-
-    inputFile.clear(); // Clear the end-of-file flag
-    inputFile.seekg(0, ios::beg); // Move the file pointer back to the beginning
-
-    outputFile.write(reinterpret_cast<const char*>(&numCharacters), sizeof(numCharacters));
-
     // Encode the text using Huffman codes and write the result to the output file
-    char buffer = 0; // Buffer to store bits before writing to the file
-    int bitCount = 0; // Count of bits in the buffer
-
-    char ch;
-    while (inputFile.get(ch)) {
-        string code = huffmanCodes.at(ch);
+    int value;
+    while (inputFile >> value) {
+        string code = huffmanCodes.at(value);
 
         for (char bit : code) {
             if (bit == '1') {
-                buffer |= (1 << (7 - bitCount));
-            }
-
-            bitCount++;
-
-            if (bitCount == 8) {
-                outputFile.put(buffer);
-                buffer = 0;
-                bitCount = 0;
+                outputFile.put(1);
+            } else {
+                outputFile.put(0);
             }
         }
-    }
-
-    // Write the last bits in the buffer
-    if (bitCount > 0) {
-        outputFile.put(buffer);
     }
 
     // Close the files
@@ -123,28 +88,75 @@ void encodeTextFile(const string& inputFileName, const string& outputFileName, c
     cout << "File encoded successfully!" << endl;
 }
 
+
+map<int, int> countFrequencies(const vector<int>& encodedVector) {
+    map<int, int> frequencyMap;
+    
+    for (size_t i = 0; i < encodedVector.size(); ++i) {
+        if (encodedVector[i] == 0) {
+            // The number following 0 represents the count of consecutive 0s
+            if (i + 1 < encodedVector.size()) {
+                int count = encodedVector[i + 1];
+                frequencyMap[0] += count;
+                i++; // Skip the count value
+            } else {
+                // Handle the case where the last element is 0 without a count
+                frequencyMap[0]++;
+            }
+        } else {
+            frequencyMap[encodedVector[i]]++;
+        }
+    }
+
+    return frequencyMap;
+}
+
+vector<int> readFile(const string& fileName) {
+    vector<int> values;
+    ifstream inputFile(fileName);
+    string line;
+    while (getline(inputFile, line, ',')) {
+        int value;
+        istringstream iss(line);
+        
+        if (!(iss >> value)) {
+            cerr << "Error: Invalid value in file" << endl;
+            return values;
+        }
+        values.push_back(value);
+    }
+    return values;
+}
+
 int main() {
 
-        // Example map<char, int>
-    map<char, int> charFrequency = {
-        {'m', 1},
-        {'i', 4},
-        {'s', 4},
-        {'p', 2}
-    };
+    vector<int> frequencies = readFile("runLengthEncoding.txt");
+        for (int i: frequencies) cout << i << ' ';
+
+    map<int, int> charFrequency = countFrequencies(frequencies);
+    
+    cout << "Frequencies:" << endl;
+    for (const auto& pair : charFrequency) {
+        cout << pair.first << ": " << pair.second << endl;
+    }
+
 
     // Build the Huffman tree
     HuffmanNode* root = buildHuffmanTree(charFrequency);
 
     // Generate Huffman codes
-    map<char, string> huffmanCodes;
+    map<int, string> huffmanCodes;
     generateHuffmanCodes(root, "", huffmanCodes);
 
     // Specify input and output file names
-    string inputFileName = "input.txt";
+    string inputFileName = "runLengthEncoding.txt";
     string outputFileName = "output.bin";
 
-    // Encode the text file using Huffman codes and write to a binary file
+    cout << "Huffman Codes:" << endl;
+    for (const auto& pair : huffmanCodes) {
+        cout << pair.first << ": " << pair.second << endl;
+    }
+
     encodeTextFile(inputFileName, outputFileName, huffmanCodes);
 
     return 0;
