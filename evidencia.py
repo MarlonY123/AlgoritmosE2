@@ -1,5 +1,4 @@
 import time
-
 import subprocess
 #SA-IS
 def getBuckets(T):
@@ -35,7 +34,7 @@ def sais(T):
             if end is not None:
                 LMS[i] = end
             end = i
-
+    
     LMS[len(T) - 1] = len(T) - 1
     count = {}
     for i in range(len(T)):
@@ -110,28 +109,33 @@ def openFile(filename):
 
 def saveFile(filename, toSave):
     f = open(filename, "w")
-    f.write(rLE)
+    f.write(toSave)
     f.close()
 
 
 #BURROWS WHEELER CODING AND DECODING
 def bwtFunction(s, sa, bwt, secciones, occ):
     for i in range(len(s)):
+        #print(i)
+        #print(secciones[s[sa[i]]])
+        #print(s[sa[i]])
         if i == 0 or s[sa[i-1]] != s[sa[i]]:
             secciones[s[sa[i]]] = i
         bwt[i] = s[sa[i]-1]
+        
         for j in secciones.keys():
             if bwt[i] == j:
                 occ[j].append(occ[j][i] + 1)
             else:
                 occ[j].append(occ[j][i])
+        
 
 def bwtInverseFunction(bwt, secciones, occurs):
     texto = ""
     n = 0
     letra = bwt[n]
     texto += letra
-    while letra != '$':
+    while letra != '\0':
         n = secciones[letra] + occurs[letra][n]
         letra = bwt[n]
         texto = letra + texto
@@ -142,6 +146,7 @@ def moveToFront(index,alph):
     alph2=alph
     alph[1:index+1]=alph2[:index]
     alph[0]=word
+
 def moveToFrontCoding(alphabet,T):
     alph2=alphabet[:]
     for i in range (len(T)):
@@ -156,7 +161,7 @@ def moveToFrontDecoding(alph,mtf):
         mtfd.append(alph[mtf[i]])
         moveToFront(mtf[i],alph)
 
-
+#RUN LENGTH ENCODING AND DECODING
 def runLengthEncoding(moveToFront):
     encoded = []
     zeroCounter = 0
@@ -180,13 +185,16 @@ def runLengthEncoding(moveToFront):
 
 def runLengthDecoding(runLength):
     decode = []
-    for i in runLength:
-        if type(i) == list:
-            decode.extend([0]*i[1])
-        else:
-            decode.append(i)
+    for i in range(len(runLength)):
+        if i == 0:
+            decode.append(runLength[i])
+        elif runLength[i] == 0:
+            decode.extend([0]*runLength[i+1])
+        elif runLength[i-1] != 0:
+            decode.append(runLength[i])
     return decode
 
+#COMPILE AND EXECUTE C++ HUFFMAN SCRIPT
 def HuffmanCpp(nombre_programa_cpp, nombre_ejecutable):
     # Compilar el programa C++
     comando_compilacion = f"g++ {nombre_programa_cpp} -o {nombre_ejecutable}"
@@ -199,13 +207,37 @@ def HuffmanCpp(nombre_programa_cpp, nombre_ejecutable):
 
 if __name__ == '__main__':
     #Declaramos el alfabeto a utilizar
-    alph = openFile("abecedario.txt")
-    alph=list(alph)
+    #alph = openFile("abecedario.txt")
+    #alph=list(alph)
+
+    alph = set()
+
+    s = openFile("Dracula.txt")
+    
+    #alph = ''.join(s)
+    #alph = list(alph)
+    #print(text)
+    
     #Declaramos la palabra a utilizar
-    s= "banana$"
+    #s= "banana"
+    s += '\0'
+    #print(s)
     #Se crea el suffix array de la palabra
-    T = [ord(c) for c in s]
+    #T = [ord(c) for c in s]
+    T = []
+    for c in s:
+        alph.add(c)
+        T.append(ord(c))
+    alph.add('\0')
+    
+    #alph = ''.join(alph)
+    alph = list(alph)
+    #print(alph)
+    #print(text)
+    
+    #T.append(0)
     sa = sais(T)
+    #print(alph)
     #Se inicia el proceso BURROWS WHEELER
     bwt = ['-'] * len(s)
     #abc = set('banana$')
@@ -216,38 +248,49 @@ if __name__ == '__main__':
     occ = {}
     for key in alph:
         occ[key] = [0]
+
+
     
     #Se aplica el BURROWS WHEELER
     startbw=time.time()
     bwtFunction(s, sa, bwt, secciones, occ)
-    #print(bwt)
-    endbw=time.time()
-    print("Ejecución de Burrows Wheeler:",(endbw-startbw),"s")
 
+    endbw=time.time()
+    #print("Ejecución de Burrows Wheeler:",(endbw-startbw),"s")
+
+    #print(bwt)
+    #bwtInverse = bwtInverseFunction(bwt, secciones, occ)
+    #print(bwtInverse)
+
+    
     #Se aplica MOVE TO FRONT
     #mtf coded list
     mtf=[]
+    mtfd=[]
+    
     startmtf=time.time()
     moveToFrontCoding(alph,bwt)
     endmtf=time.time()
     print("Ejecución de Move To Front:",(endmtf-startmtf),"s")
+    #print(mtf)
 
-    mtfd=[]
     moveToFrontDecoding(alph,mtf)
-    print(mtf)
-
+    
     #RUN-LENGTH 
     rLE = runLengthEncoding(mtf)
-    rLD = runLengthDecoding(rLE)
+    #print(rLE)
+
+    #rLD = runLengthDecoding(rLE)
+    #print(rLD)
 
     rLE = ', '.join(map(str, rLE))
     saveFile("runLengthEncoding.txt", rLE)
 
-    #print(runLengthEncoding(moveToFront))
-
     nombre_programa_cpp = "huffman.cpp"
     nombre_ejecutable = "huffman"
 
-    HuffmanCpp(nombre_programa_cpp, nombre_ejecutable)
+    #HuffmanCpp(nombre_programa_cpp, nombre_ejecutable)
+    
 
+    
     
