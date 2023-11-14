@@ -1,5 +1,8 @@
 import time
 import subprocess
+import numpy as np
+from memory_profiler import memory_usage
+import pylab as pl
 #SA-IS
 def getBuckets(T):
     count = {}
@@ -232,7 +235,15 @@ if __name__ == '__main__':
     bwtFunction(s, sa, bwt, secciones, occ)
 
     endbw=time.time()
-    print("Ejecución de Burrows Wheeler:",(endbw-startbw),"s")
+    print("BURROWS WHEELER")
+    print("Tiempo de Ejecución:",(endbw-startbw),"s")
+    #memory profiling
+    memoryUsage=memory_usage((bwtFunction,(s, sa, bwt, secciones, occ, )),interval=0.01)
+    pl.plot(np.arange(len(memoryUsage)) *0.1, memoryUsage, label='SA-IS Algorithm')
+    pl.title('Consumo de Memoria (BWT)')
+    pl.xlabel('Tiempo (s)')
+    pl.ylabel('Uso de memoria (kB)')
+    pl.show()
 
     
     # Se aplica MOVE TO FRONT
@@ -243,15 +254,28 @@ if __name__ == '__main__':
     startmtf=time.time()
     moveToFrontCoding(alph,bwt)
     endmtf=time.time()
-    print("Ejecución de Move To Front:",(endmtf-startmtf),"s")
-
+    print("MOVE TO FRONT")
+    print("Tiempo de Ejecución:",(endmtf-startmtf),"s")
+    #memory profiling
+    memoryUsage=memory_usage((moveToFrontCoding,(alph,bwt, )),interval=0.01)
+    pl.plot(np.arange(len(memoryUsage)) *0.1, memoryUsage, label='SA-IS Algorithm')
+    pl.title('Consumo de Memoria (MTF)')
+    pl.xlabel('Tiempo (s)')
+    pl.ylabel('Uso de memoria (kB)')
+    pl.show()
     
     # RUN-LENGTH 
     startrl=time.time()
     rLE = runLengthEncoding(mtf)
     endrl=time.time()
-    print("Ejecución del Run-Length:",(endrl-startrl),"s")
-
+    print("RUN-LENGTH")
+    print("Tiempo de Ejecución:",(endrl-startrl),"s")
+    memoryUsage=memory_usage((runLengthEncoding,(mtf, )),interval=0.01)
+    pl.plot(np.arange(len(memoryUsage)) *0.1, memoryUsage, label='SA-IS Algorithm')
+    pl.title('Consumo de Memoria (RLT)')
+    pl.xlabel('Tiempo (s)')
+    pl.ylabel('Uso de memoria (kB)')
+    pl.show()
     
 
     # nombre_programa_cpp = "huffman.cpp"
