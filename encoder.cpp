@@ -38,7 +38,7 @@ HuffmanNode* buildHuffmanTree(const map<int, int>& charFrequency) {
         HuffmanNode* right = minHeap.top();
         minHeap.pop();
 
-        HuffmanNode* newNode = new HuffmanNode('$', left->frequency + right->frequency);
+        HuffmanNode* newNode = new HuffmanNode('ā', left->frequency + right->frequency);
         newNode->left = left;
         newNode->right = right;
 
@@ -53,39 +53,12 @@ void generateHuffmanCodes(HuffmanNode* root, const string& code, map<int, string
         return;
     }
 
-    if (root->data != '$') {
+    if (root->data != 'ā') {
         huffmanCodes[root->data] = code;
     }
 
     generateHuffmanCodes(root->left, code + "0", huffmanCodes);
     generateHuffmanCodes(root->right, code + "1", huffmanCodes);
-}
-
-
-void encodeTextFile(const string& inputFileName, const string& outputFileName, const map<int, string>& huffmanCodes) {
-    ifstream inputFile(inputFileName, ios::in);
-
-    ofstream outputFile(outputFileName, ios::out | ios::binary);
-
-    // Encode the text using Huffman codes and write the result to the output file
-    int value;
-    while (inputFile >> value) {
-        string code = huffmanCodes.at(value);
-
-        for (char bit : code) {
-            if (bit == '1') {
-                outputFile.put(1);
-            } else {
-                outputFile.put(0);
-            }
-        }
-    }
-
-    // Close the files
-    inputFile.close();
-    outputFile.close();
-
-    cout << "File encoded successfully!" << endl;
 }
 
 
@@ -128,10 +101,39 @@ vector<int> readFile(const string& fileName) {
     return values;
 }
 
+void encodeToBinaryFile(const map<int, string>& huffmanCodes, const vector<int>& inputVector, const string& outputFile) {
+    ofstream binaryFile(outputFile, ios::binary);
+
+    for (size_t i = 0; i < inputVector.size(); ++i) {
+        int value = inputVector[i];
+        const string& code = huffmanCodes.at(value);
+        //cout << value << " = " << code << endl;
+        // If the value is 0, move to the next position and encode zeros
+        if (value == 0) {
+            // Move to the next position
+            ++i;
+            // Encode the specified number of zeros
+            for (int j = 0; j < inputVector[i]; ++j) {
+                for (char bit : code) {
+                binaryFile.put(bit == '0' ? 0 : 1);
+                //cout << "# of 0" << " = " << j << endl;
+                }
+            }
+        } else {
+            // Encode the Huffman code for the current value
+            for (char bit : code) {
+                binaryFile.put(bit == '0' ? 0 : 1);
+            }
+        }
+    }
+
+    binaryFile.close();
+}
+
 int main() {
 
     vector<int> frequencies = readFile("runLengthEncoding.txt");
-        for (int i: frequencies) cout << i << ' ';
+        //for (int i: frequencies) cout << i << ' ';
 
     map<int, int> charFrequency = countFrequencies(frequencies);
     
@@ -157,7 +159,9 @@ int main() {
         cout << pair.first << ": " << pair.second << endl;
     }
 
-    encodeTextFile(inputFileName, outputFileName, huffmanCodes);
+    cout << "Bytes of int vector: " << sizeof(vector<int>) + (sizeof(int) * frequencies.size()) << endl;
 
+    //encodeTextFile(inputFileName, outputFileName, huffmanCodes);
+    encodeToBinaryFile(huffmanCodes, frequencies, "output.bin");
     return 0;
 }
