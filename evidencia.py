@@ -229,7 +229,7 @@ def insert_string_to_file(filename, input_string):
 if __name__ == '__main__':
     
     #Declaramos el libro a utilizar
-    s = openFile("Libros/war.txt")
+    s = openFile("Libros/Dracula.txt")
     s+='\0'
     #Se crea el suffix array de la palabra
     T = []
