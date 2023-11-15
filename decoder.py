@@ -27,7 +27,7 @@ def HuffmanCpp(nombre_programa_cpp, nombre_ejecutable):
     comando_ejecucion = f"{nombre_ejecutable}.exe"  # Cambia a nombre_ejecutable.exe en Windows
     proceso_ejecucion = subprocess.run(comando_ejecucion, shell=True, check=True)
 
-nombre_programa_cpp = "decoder.cpp"
-nombre_ejecutable = "decoder"
-#HuffmanCpp(nombre_programa_cpp, nombre_ejecutable)
+nombre_programa_cpp = "decode.cpp"
+nombre_ejecutable = "a"
+HuffmanCpp(nombre_programa_cpp, nombre_ejecutable)
 
