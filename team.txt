@@ -1,0 +1,3 @@
+Cruz Daniel Pérez Jiménez A01736214-Algoritmo Move to front, así como el inverso de este, medición del tiempo de ejecución y uso de memoria del algoritmo, descompresión del archivo.
+Erwin Porras Guerra A01734881- Algoritmo de creación de árbol de Huffman, creación de códigos Huffman, compresión con Huffman a binario, decodificación de archivo binario a txt con Huffman.
+Marlon Yahir Martínez Chacón A01424875 - Algoritmo Burrow-Wheeler Transform y su inverso, Algoritmo Run Length Encoding y su inverso, guardar los resultados en archivos de texto (.txt)

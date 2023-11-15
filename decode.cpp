@@ -149,7 +149,7 @@ int main() {
     vector<int> decodedData;
 
     ifstream codedfile;
-    codedfile.open("output.txt");
+    codedfile.open("Resultado/8-Huffman.txt");
     stringstream buffer; 
     buffer << codedfile.rdbuf(); 
     string codedstring;
@@ -158,7 +158,7 @@ int main() {
 
     decodedData = decode_file(root, codedstring);
 
-    vectortxt(decodedData, "decoded.txt");
+    vectortxt(decodedData, "Resultado/decodedHuff.txt");
 
     return 0;
 }

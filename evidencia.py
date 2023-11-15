@@ -1,8 +1,10 @@
 import time
 import subprocess
+import bitarray
 import numpy as np
 from memory_profiler import memory_usage
 import pylab as pl
+from bitarray import _bitarray_reconstructor
 #SA-IS
 def getBuckets(T):
     count = {}
@@ -206,20 +208,28 @@ def runLengthDecoding(runLength):
     return decode
 
 #COMPILE AND EXECUTE C++ HUFFMAN SCRIPT
-def HuffmanCpp(nombre_programa_cpp, nombre_ejecutable):
+def HuffmanCpp(nombre_programa_cpp):
     # Compilar el programa C++
-    comando_compilacion = f"g++ {nombre_programa_cpp} -o {nombre_ejecutable}"
+    comando_compilacion = f"g++ {nombre_programa_cpp}"
     proceso_compilacion = subprocess.run(comando_compilacion, shell=True, check=True)
 
     # Ejecutar el programa compilado
-    comando_ejecucion = f"{nombre_ejecutable}.exe"  # Cambia a nombre_ejecutable.exe en Windows
-    proceso_ejecucion = subprocess.run(comando_ejecucion, shell=True, check=True)
+    proceso_ejecucion = subprocess.run("./a.out")
+
+def insert_string_to_file(filename, input_string):
+    try:
+        with open(filename, 'a') as file:
+            file.write(input_string + '\n')  # Appends the string to the file with a newline character
+        print(f'String inserted into {filename} successfully.')
+    except Exception as e:
+        print(f'Error: {e}')
+
 
 
 if __name__ == '__main__':
     
     #Declaramos el libro a utilizar
-    s = openFile("Libros/Dracula.txt")
+    s = openFile("Libros/war.txt")
     s+='\0'
     #Se crea el suffix array de la palabra
     T = []
@@ -281,15 +291,27 @@ if __name__ == '__main__':
     pl.ylabel('Uso de memoria (kB)')
     pl.show()
     
+    #Ejecucion de Huffman
+    nombre_programa_cpp = "encoder.cpp"
 
-    # nombre_programa_cpp = "huffman.cpp"
-    # nombre_ejecutable = "huffman"
+    HuffmanCpp(nombre_programa_cpp)
 
-    # # HuffmanCpp(nombre_programa_cpp, nombre_ejecutable)
     saveFile("Resultado/1-SuffixArray.txt",''.join(map(str,sa)))
     saveFile("Resultado/2-abecedario.txt",''.join(map(str,alph)))
     saveFile("Resultado/3-BurrowsWheelerTransform.txt",''.join(map(str,bwt)))
     saveFile("Resultado/4-MoveToFront.txt",''.join(map(str,mtf)))
-    saveFile("Resultado/5-RunLength.txt",''.join(map(str,rLE)))
-    
+    saveFile("Resultado/5-RunLength.txt",', '.join(map(str,rLE)))
+    saveFile("Resultado/9-TextCompressed.txt",''.join(map(str,rLE)))
+    #INICIO DE DECODIFICACION
+    HFMD=[]
+    with open("Resultado/7-Huffman.bin", "rb") as file:
+        data = file.read()
+    datastring = ''.join(['0' if b == 0x00 else '1' if b == 0x01 else f'\\x{b:02x}' for b in data])
+    filename = 'Resultado/8-Huffman.txt'
+    insert_string_to_file(filename, datastring)
+    HuffmanCpp("decode.cpp")
+    rLE=runLengthDecoding(rLE)
+    rLE=moveToFrontDecoding(alph,rLE)
+    rLE=bwtInverseFunction(rLE,secciones,occ)
+    saveFile("Resultado/10-TextDecompressed.txt",''.join(map(str,rLE)))
     

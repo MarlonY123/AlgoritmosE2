@@ -158,7 +158,8 @@ int main() {
     map<int, string> huffmanCodes;
     generateHuffmanCodes(root, "", huffmanCodes);
 
-    mapToTxt(huffmanCodes, "huffman.txt");
+    mapToTxt(huffmanCodes, "Resultado/6-huffmanMap.txt");
+
 
     cout << "Huffman Codes:" << endl;
     for (const auto& pair : huffmanCodes) {
@@ -167,6 +168,7 @@ int main() {
 
     cout << "Bytes of int vector: " << sizeof(vector<int>) + (sizeof(int) * frequencies.size()) << endl;
 
-    encodeToBinaryFile(huffmanCodes, frequencies, "output.bin");
+    //encodeTextFile(inputFileName, outputFileName, huffmanCodes);
+    encodeToBinaryFile(huffmanCodes, frequencies, "Resultado/7-Huffman.bin");
     return 0;
 }
