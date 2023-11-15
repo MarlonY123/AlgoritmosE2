@@ -144,25 +144,33 @@ def bwtInverseFunction(bwt, secciones, occurs):
         texto = letra + texto
     return texto
 #MOVE TO FRONT CODING AND DECODING
+def match(char,alph):
+    for j in range (len(alph)):
+        if alph[j]==char:
+            return j
+
 def moveToFront(index,alph):
     word=alph[index]
-    alph2=alph
+    alph2=alph[:]
     alph[1:index+1]=alph2[:index]
     alph[0]=word
 
 def moveToFrontCoding(alphabet,T):
     alph2=alphabet[:]
+    mtf=[]
     for i in range (len(T)):
-        for j in range(len(alph2)):
-            if T[i] == alph2[j]:
-                mtf.append(j)
-                moveToFront(j,alph2)
-                break
+        j=match(T[i],alph2)
+        mtf.append(j)
+        moveToFront(j,alph2)
+    return mtf
+            
 
 def moveToFrontDecoding(alph,mtf):
+    mtfd=[]
     for i in range(len(mtf)):
         mtfd.append(alph[mtf[i]])
         moveToFront(mtf[i],alph)
+    return mtfd
 
 #RUN LENGTH ENCODING AND DECODING
 def runLengthEncoding(moveToFront):
@@ -223,7 +231,6 @@ if __name__ == '__main__':
     sa = sais(T)
     #Se inicia el proceso BURROWS WHEELER
     bwt = ['-'] * len(s)
-    
     #Definicion del diccionario para las secciones del first
     secciones = dict.fromkeys(alph,0)
     #Definicion del diccionario para las ocurrencias del last
@@ -244,15 +251,12 @@ if __name__ == '__main__':
     pl.xlabel('Tiempo (s)')
     pl.ylabel('Uso de memoria (kB)')
     pl.show()
-
     
     # Se aplica MOVE TO FRONT
     # mtf coded list
-    mtf=[]
-    mtfd=[]
     
     startmtf=time.time()
-    moveToFrontCoding(alph,bwt)
+    mtf=moveToFrontCoding(alph,bwt)
     endmtf=time.time()
     print("MOVE TO FRONT")
     print("Tiempo de Ejecución:",(endmtf-startmtf),"s")
@@ -282,10 +286,10 @@ if __name__ == '__main__':
     # nombre_ejecutable = "huffman"
 
     # # HuffmanCpp(nombre_programa_cpp, nombre_ejecutable)
-    saveFile("Resultado/1-SuffixArray.txt",' '.join(map(str,sa)))
+    saveFile("Resultado/1-SuffixArray.txt",''.join(map(str,sa)))
     saveFile("Resultado/2-abecedario.txt",''.join(map(str,alph)))
-    saveFile("Resultado/3-BurrowsWheelerTransform.txt",' '.join(map(str,bwt)))
-    saveFile("Resultado/4-MoveToFront.txt",' '.join(map(str,mtf)))
-    saveFile("Resultado/5-RunLength.txt",' '.join(map(str,rLE)))
+    saveFile("Resultado/3-BurrowsWheelerTransform.txt",''.join(map(str,bwt)))
+    saveFile("Resultado/4-MoveToFront.txt",''.join(map(str,mtf)))
+    saveFile("Resultado/5-RunLength.txt",''.join(map(str,rLE)))
     
     
