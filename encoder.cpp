@@ -140,7 +140,7 @@ void mapToTxt(const std::map<int, std::string>& myMap, const std::string& fileNa
 
 int main() {
 
-    vector<int> frequencies = readFile("runLengthEncoding.txt");
+    vector<int> frequencies = readFile("Resultado/5-RunLength.txt");
         //for (int i: frequencies) cout << i << ' ';
 
     map<int, int> charFrequency = countFrequencies(frequencies);
@@ -161,7 +161,7 @@ int main() {
     mapToTxt(huffmanCodes, "huffman.txt");
 
     // Specify input and output file names
-    string inputFileName = "runLengthEncoding.txt";
+    string inputFileName = "5-RunLength.txt";
     string outputFileName = "output.bin";
 
     cout << "Huffman Codes:" << endl;
