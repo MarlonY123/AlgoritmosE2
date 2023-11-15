@@ -9,12 +9,12 @@
 using namespace std;
 
 struct HuffmanNode {
-    char data;
+    int data;
     int frequency;
     HuffmanNode* left;
     HuffmanNode* right;
 
-    HuffmanNode(char c, int freq) : data(c), frequency(freq), left(nullptr), right(nullptr) {}
+    HuffmanNode(int c, int freq) : data(c), frequency(freq), left(nullptr), right(nullptr) {}
 };
 
 struct CompareNodes {
@@ -160,10 +160,6 @@ int main() {
 
     mapToTxt(huffmanCodes, "huffman.txt");
 
-    // Specify input and output file names
-    string inputFileName = "5-RunLength.txt";
-    string outputFileName = "output.bin";
-
     cout << "Huffman Codes:" << endl;
     for (const auto& pair : huffmanCodes) {
         cout << pair.first << ": " << pair.second << endl;
@@ -171,7 +167,6 @@ int main() {
 
     cout << "Bytes of int vector: " << sizeof(vector<int>) + (sizeof(int) * frequencies.size()) << endl;
 
-    //encodeTextFile(inputFileName, outputFileName, huffmanCodes);
     encodeToBinaryFile(huffmanCodes, frequencies, "output.bin");
     return 0;
 }

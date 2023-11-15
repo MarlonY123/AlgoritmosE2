@@ -128,14 +128,14 @@ void vectortxt(const vector<int>& myVector, const string& fileName) {
 
     // Write each element of the vector to the text file
     for (const int& value : myVector) {
-        textFile << value << endl;
+        textFile << value << ",";
     }
     textFile.close();
 }
 
 int main() {
 
-    vector<int> frequencies = readFile("runLengthEncoding.txt");
+    vector<int> frequencies = readFile("Resultado/5-RunLength.txt");
 
     map<int, int> charFrequency = countFrequencies(frequencies);
 

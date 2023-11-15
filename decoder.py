@@ -1,13 +1,10 @@
 import os
 import subprocess
 
-def insert_string_to_file(filename, input_string):
-    try:
-        with open(filename, 'a') as file:
-            file.write(input_string + '\n')  # Appends the string to the file with a newline character
-        print(f'String inserted into {filename} successfully.')
-    except Exception as e:
-        print(f'Error: {e}')
+def saveFile(filename, toSave):
+    f = open(filename, "w")
+    f.write(toSave)
+    f.close()
 
 with open("output.bin", "rb") as file:
     data = file.read()
@@ -16,7 +13,7 @@ with open("output.bin", "rb") as file:
 datastring = ''.join(['0' if b == 0x00 else '1' if b == 0x01 else f'\\x{b:02x}' for b in data])
 filename = 'output.txt'
 
-insert_string_to_file(filename, datastring)
+saveFile(filename, datastring)
 
 def HuffmanCpp(nombre_programa_cpp, nombre_ejecutable):
     # Compilar el programa C++
